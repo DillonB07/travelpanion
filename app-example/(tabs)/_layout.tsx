@@ -33,7 +33,7 @@ export default function TabLayout() {
           title: "Currency",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "cash" : "cash-outline"}
+              name={focused ? "code-slash" : "code-slash-outline"}
               color={color}
             />
           ),
@@ -45,7 +45,7 @@ export default function TabLayout() {
           title: "Timezones",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "globe" : "globe-outline"}
+              name={focused ? "person" : "person-outline"}
               color={color}
             />
           ),
