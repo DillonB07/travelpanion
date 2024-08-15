@@ -7,9 +7,19 @@ import CurrencyModal from "../(modals)/currency";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import Table, {
+  KeyValueCell,
+  Section,
+  StaticCell,
+} from "react-native-js-tableview";
+
 export default function CurrencyScreen() {
   const [modalOpen, setModalOpen] = useState(false);
   const [currencies, setCurrencies] = useState<string[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>(
+    {},
+  );
+  const homeCurrency = "GBP";
 
   useEffect(() => {
     async function fetchCurrencies() {
@@ -25,6 +35,21 @@ export default function CurrencyScreen() {
 
     fetchCurrencies();
   }, []);
+
+  useEffect(() => {
+    async function fetchExchangeRates() {
+      try {
+        const exchangeRates = await fetch(
+          `https://api.exchangerate-api.com/v4/latest/${homeCurrency}`,
+        ).then((response) => response.json());
+        const rates = exchangeRates.rates;
+        setExchangeRates(rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    }
+    fetchExchangeRates();
+  });
 
   const onModalClose = () => {
     console.log("boo");
@@ -46,7 +71,19 @@ export default function CurrencyScreen() {
         <Button title="Add Currency" onPress={() => setModalOpen(true)} />
         <CurrencyModal isVisible={modalOpen} onClose={onModalClose} />
       </ThemedView>
-      {currencies?.map((curr: string) => <Text>{curr}</Text>)}
+      {currencies?.map((curr: string) => <Text key={curr}>{curr}</Text>)}
+      <Table>
+        <Section header="£5 in your currencies">
+          <KeyValueCell title="USD" value={`${exchangeRates["USD"] * 5}`} />
+          {currencies.map((curr: string) => (
+            <KeyValueCell
+              key={curr}
+              title={curr}
+              value={`${exchangeRates[curr] * 5}`}
+            />
+          ))}
+        </Section>
+      </Table>
     </ParallaxScrollView>
   );
 }
