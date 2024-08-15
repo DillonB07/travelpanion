@@ -1,11 +1,19 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import addCurrency from "@/utils/currency/addCurrency";
 import { router } from "expo-router";
 import { Button, Image, StyleSheet } from "react-native";
+import CurrencyModal from "../(modals)/currency";
+import { useState } from "react";
 
 export default function CurrencyScreen() {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const onModalClose = () => {
+    console.log("boo");
+    setModalOpen(false);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -16,12 +24,10 @@ export default function CurrencyScreen() {
         />
       }
     >
-      <ThemedView>
+      <ThemedView style={styles.centeredView}>
         <ThemedText type="subtitle">Currency</ThemedText>
-        <Button
-          title="Add Currency"
-          onPress={() => router.navigate("/(modals)/currency")}
-        />
+        <Button title="Add Currency" onPress={() => setModalOpen(true)} />
+        <CurrencyModal isVisible={modalOpen} onClose={onModalClose} />
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -43,5 +49,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
   },
 });
