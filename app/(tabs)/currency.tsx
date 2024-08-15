@@ -2,12 +2,29 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { router } from "expo-router";
-import { Button, Image, StyleSheet } from "react-native";
+import { Button, Image, Text, StyleSheet } from "react-native";
 import CurrencyModal from "../(modals)/currency";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CurrencyScreen() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [currencies, setCurrencies] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function fetchCurrencies() {
+      try {
+        const storedCurrencies = await AsyncStorage.getItem("currencies");
+        if (storedCurrencies) {
+          setCurrencies(JSON.parse(storedCurrencies));
+        }
+      } catch (error) {
+        console.error("Error fetching currencies:", error);
+      }
+    }
+
+    fetchCurrencies();
+  }, []);
 
   const onModalClose = () => {
     console.log("boo");
@@ -29,6 +46,7 @@ export default function CurrencyScreen() {
         <Button title="Add Currency" onPress={() => setModalOpen(true)} />
         <CurrencyModal isVisible={modalOpen} onClose={onModalClose} />
       </ThemedView>
+      {currencies?.map((curr: string) => <Text>{curr}</Text>)}
     </ParallaxScrollView>
   );
 }
